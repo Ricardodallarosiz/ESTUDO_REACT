@@ -13,23 +13,23 @@ interface Tarefa {
     categoria: Categoria;
 }
 
-const TarefasNaoConcluidas: React.FC = () => {
+const TarefasConcluidas: React.FC = () => {
     const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 
     useEffect(() => {
-        // Faz a requisição para listar tarefas não concluídas
-        api.get("/tarefa/naoconcluidas")
+        // Faz a requisição para listar tarefas concluídas
+        api.get("/tarefa/concluidas")
             .then((response) => {
                 setTarefas(response.data);
             })
             .catch((error) => {
-                console.error("Erro ao listar tarefas não concluídas:", error);
+                console.error("Erro ao listar tarefas concluídas:", error);
             });
     }, []);
 
     return (
         <div>
-            <h2>Tarefas Não Concluídas</h2>
+            <h2>Tarefas Concluídas</h2>
             <table border={1}>
                 <thead>
                     <tr>
@@ -56,4 +56,4 @@ const TarefasNaoConcluidas: React.FC = () => {
     );
 };
 
-export default TarefasNaoConcluidas;
+export default TarefasConcluidas;
