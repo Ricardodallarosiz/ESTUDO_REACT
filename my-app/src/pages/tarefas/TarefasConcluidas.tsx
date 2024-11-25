@@ -1,30 +1,15 @@
 import React, { useEffect, useState } from "react";
-import api from "../../services/api";
-
-interface Categoria {
-    nome: string;
-}
-
-interface Tarefa {
-    tarefaId: number;
-    titulo: string;
-    descricao: string;
-    status: string;
-    categoria: Categoria;
-}
+import axios from "axios";
+import { Tarefa } from "../../models/Tarefas";
 
 const TarefasConcluidas: React.FC = () => {
     const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 
     useEffect(() => {
-        // Faz a requisição para listar tarefas concluídas
-        api.get("/tarefa/concluidas")
-            .then((response) => {
-                setTarefas(response.data);
-            })
-            .catch((error) => {
-                console.error("Erro ao listar tarefas concluídas:", error);
-            });
+        axios
+            .get<Tarefa[]>("http://localhost:5000/api/tarefa/concluidas")
+            .then((res) => setTarefas(res.data))
+            .catch((err) => console.error("Erro ao buscar tarefas concluídas:", err));
     }, []);
 
     return (
@@ -42,12 +27,12 @@ const TarefasConcluidas: React.FC = () => {
                 </thead>
                 <tbody>
                     {tarefas.map((tarefa) => (
-                        <tr key={tarefa.tarefaId}>
-                            <td>{tarefa.tarefaId}</td>
+                        <tr key={tarefa.id}>
+                            <td>{tarefa.id}</td>
                             <td>{tarefa.titulo}</td>
                             <td>{tarefa.descricao}</td>
                             <td>{tarefa.status}</td>
-                            <td>{tarefa.categoria?.nome}</td>
+                            <td>{tarefa.categoria.nome}</td>
                         </tr>
                     ))}
                 </tbody>

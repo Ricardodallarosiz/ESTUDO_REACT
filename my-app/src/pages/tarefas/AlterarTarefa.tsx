@@ -11,14 +11,13 @@ const AlterarTarefa: React.FC = () => {
             return;
         }
 
-        // Faz a requisição PATCH para alterar o status
         axios
             .patch(`http://localhost:3000/api/tarefa/alterar/${tarefaId}`)
-            .then((response) => {
-                setMensagem(`Status da tarefa alterado com sucesso: ${response.data.status}`);
+            .then((resposta) => {
+                setMensagem(`Status da tarefa alterado com sucesso: ${resposta.data.status}`);
             })
-            .catch((error) => {
-                if (error.response && error.response.status === 404) {
+            .catch((erro) => {
+                if (erro.response && erro.response.status === 404) {
                     setMensagem("Tarefa não encontrada.");
                 } else {
                     setMensagem("Erro ao alterar o status da tarefa.");
@@ -29,16 +28,13 @@ const AlterarTarefa: React.FC = () => {
     return (
         <div>
             <h2>Alterar Status da Tarefa</h2>
-            <div>
-                <label htmlFor="tarefaId">ID da Tarefa:</label>
-                <input
-                    type="number"
-                    id="tarefaId"
-                    value={tarefaId || ""}
-                    onChange={(e) => setTarefaId(Number(e.target.value))}
-                />
-                <button onClick={alterarStatus}>Alterar Status</button>
-            </div>
+            <input
+                type="number"
+                placeholder="ID da Tarefa"
+                value={tarefaId || ""}
+                onChange={(e) => setTarefaId(Number(e.target.value))}
+            />
+            <button onClick={alterarStatus}>Alterar Status</button>
             {mensagem && <p>{mensagem}</p>}
         </div>
     );

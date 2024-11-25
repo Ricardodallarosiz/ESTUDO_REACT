@@ -1,36 +1,26 @@
 import React, { useEffect, useState } from "react";
-import api from "../../services/api";
-
-interface Categoria {
-    nome: string;
-}
-
-interface Tarefa {
-    tarefaId: number;
-    titulo: string;
-    descricao: string;
-    status: string;
-    categoria: Categoria;
-}
+import axios from "axios";
+import { Tarefa } from "../../models/Tarefas";
 
 const ListarTarefas: React.FC = () => {
     const [tarefas, setTarefas] = useState<Tarefa[]>([]);
 
+    // Buscar as tarefas na API
     useEffect(() => {
-        // Faz a requisição para listar todas as tarefas
-        api.get("/tarefa/listar")
-            .then((response) => {
-                setTarefas(response.data);
+        axios
+            .get<Tarefa[]>("http://localhost:3000/api/tarefa/listar") // URL da API
+            .then((resposta) => {
+                setTarefas(resposta.data); // Salva as tarefas no estado
             })
-            .catch((error) => {
-                console.error("Erro ao listar tarefas:", error);
+            .catch((erro) => {
+                console.error("Erro ao buscar tarefas:", erro);
             });
     }, []);
 
     return (
         <div>
-            <h2>Listar Todas as Tarefas</h2>
-            <table border={1}>
+            <h1>Lista de Tarefas</h1>
+            <table border ={1}>
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -42,12 +32,12 @@ const ListarTarefas: React.FC = () => {
                 </thead>
                 <tbody>
                     {tarefas.map((tarefa) => (
-                        <tr key={tarefa.tarefaId}>
-                            <td>{tarefa.tarefaId}</td>
+                        <tr key={tarefa.id}>
+                            <td>{tarefa.id}</td>
                             <td>{tarefa.titulo}</td>
                             <td>{tarefa.descricao}</td>
                             <td>{tarefa.status}</td>
-                            <td>{tarefa.categoria?.nome}</td>
+                            <td>{tarefa.categoria.nome}</td>
                         </tr>
                     ))}
                 </tbody>

@@ -1,28 +1,11 @@
-import React, { useState, useEffect } from "react";
-import api from "../../services/api";
-
-interface Categoria {
-    categoriaId: number;
-    nome: string;
-}
+import React, { useState } from "react";
+import axios from "axios";
 
 const CadastrarTarefa: React.FC = () => {
-    const [titulo, setTitulo] = useState("");
-    const [descricao, setDescricao] = useState("");
+    const [titulo, setTitulo] = useState<string>("");
+    const [descricao, setDescricao] = useState<string>("");
     const [categoriaId, setCategoriaId] = useState<number | null>(null);
-    const [categorias, setCategorias] = useState<Categoria[]>([]);
-    const [mensagem, setMensagem] = useState("");
-
-    useEffect(() => {
-        // Busca categorias para o dropdown
-        api.get("/categoria/listar")
-            .then((response) => {
-                setCategorias(response.data);
-            })
-            .catch((error) => {
-                console.error("Erro ao buscar categorias:", error);
-            });
-    }, []);
+    const [mensagem, setMensagem] = useState<string>("");
 
     const cadastrarTarefa = (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,66 +15,43 @@ const CadastrarTarefa: React.FC = () => {
             return;
         }
 
-        const novaTarefa = {
+        const tarefa = {
             titulo,
             descricao,
-            status: "Não iniciada", // Status padrão
             categoriaId,
+            status: "Não iniciada", // Status inicial
         };
 
-        api.post("/tarefa/cadastrar", novaTarefa)
-            .then(() => {
-                setMensagem("Tarefa cadastrada com sucesso!");
-                setTitulo("");
-                setDescricao("");
-                setCategoriaId(null);
-            })
-            .catch((error) => {
-                console.error("Erro ao cadastrar tarefa:", error);
-                setMensagem("Erro ao cadastrar tarefa.");
-            });
+        axios
+            .post("http://localhost:3000/api/tarefa/cadastrar", tarefa)
+            .then(() => setMensagem("Tarefa cadastrada com sucesso!"))
+            .catch(() => setMensagem("Erro ao cadastrar a tarefa."));
     };
 
     return (
         <div>
-            <h2>Cadastrar Nova Tarefa</h2>
-            {mensagem && <p>{mensagem}</p>}
+            <h2>Cadastrar Tarefa</h2>
             <form onSubmit={cadastrarTarefa}>
-                <div>
-                    <label>Título:</label>
-                    <input
-                        type="text"
-                        value={titulo}
-                        onChange={(e) => setTitulo(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Descrição:</label>
-                    <input
-                        type="text"
-                        value={descricao}
-                        onChange={(e) => setDescricao(e.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Categoria:</label>
-                    <select
-                        value={categoriaId || ""}
-                        onChange={(e) => setCategoriaId(Number(e.target.value))}
-                        required
-                    >
-                        <option value="">Selecione</option>
-                        {categorias.map((categoria) => (
-                            <option key={categoria.categoriaId} value={categoria.categoriaId}>
-                                {categoria.nome}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <input
+                    type="text"
+                    placeholder="Título"
+                    value={titulo}
+                    onChange={(e) => setTitulo(e.target.value)}
+                />
+                <textarea
+                    placeholder="Descrição"
+                    value={descricao}
+                    onChange={(e) => setDescricao(e.target.value)}
+                />
+                <input
+                    type="number"
+                    placeholder="Categoria ID"
+                    value={categoriaId || ""}
+                    onChange={(e) => setCategoriaId(Number(e.target.value))}
+                />
                 <button type="submit">Cadastrar</button>
             </form>
+            {mensagem && <p>{mensagem}</p>}
         </div>
     );
 };
